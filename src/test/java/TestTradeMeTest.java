@@ -7,21 +7,25 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 public class TestTradeMeTest {
 
     private WebDriver driver;
     private ExcelRead excelRead = new ExcelRead();
-    private String url = excelRead.readFromExcel(1,1);
+    private ReadProperties rp = new ReadProperties();
     private PropertyPage propertyPage;
     private Screenshots screenshots;
+    private String url;
+
 
 
     @BeforeMethod
-    public void setUp() {
+    public void setUp() throws IOException {
         driver = new ChromeDriver();
         driver.manage().window().maximize();
+        url = rp.readProps("url");
         driver.get(url);
         propertyPage = new PropertyPage(driver);
         driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
@@ -46,10 +50,10 @@ public class TestTradeMeTest {
     public void testRentalPropertyAdvDefaultOrder() throws InterruptedException, IOException {
         propertyPage.clickPropertyTab();
         propertyPage.clickToRent();
-        propertyPage.provideRegion("Wellington");
-        propertyPage.provideDistrict("Wellington");
-        propertyPage.provideSuburb("Brooklyn");
-        propertyPage.provideSuburb("Kelburn");
+        propertyPage.provideRegion(excelRead.readFromExcel(1,1));
+        propertyPage.provideDistrict(excelRead.readFromExcel(2,1));
+        propertyPage.provideSuburb(excelRead.readFromExcel(3,1));
+        propertyPage.provideSuburb(excelRead.readFromExcel(4,1));
         propertyPage.searchRental();
         Assert.assertEquals(propertyPage.sort.getText(),"Featured first","Checking the default sort order");
     }
